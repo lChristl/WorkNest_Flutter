@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/task_store.dart';
 
 import '../../services/supabase_client.dart';
 import '../../theme/app_colors.dart';
@@ -53,6 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logout() async {
+    taskStore.clear();
     await supabase.auth.signOut();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(

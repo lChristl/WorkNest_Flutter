@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../services/reminder_service.dart';
+import '../services/task_store.dart';
 import '../theme/app_colors.dart';
+import '../widgets/reminder_bell.dart';
 import '../widgets/worknest_app_bar.dart';
 import 'calendar/calendar_screen.dart';
 import 'groups/groups_screen.dart';
 import 'home/home_screen.dart';
 import 'profile/profile_screen.dart';
+import 'reminders/reminders_screen.dart';
 
 /// Holds the header + bottom navigation (Home / Calendar / Groups / Profile).
 class MainShell extends StatefulWidget {
@@ -19,9 +23,39 @@ class _MainShellState extends State<MainShell> {
   int _index = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _loadAndAnnounce();
+  }
+
+  Future<void> _loadAndAnnounce() async {
+    await taskStore.load();
+    if (!mounted) return;
+
+    final count = computeReminders(taskStore.tasks).count;
+    if (count == 0) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          count == 1 ? 'You have 1 reminder' : 'You have $count reminders',
+        ),
+        action: SnackBarAction(
+          label: 'View',
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const RemindersScreen()),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: workNestAppBar(),
+      appBar: workNestAppBar(actions: const [ReminderBell()]),
       body: IndexedStack(
         index: _index,
         children: const [
@@ -48,7 +82,10 @@ class _MainShellState extends State<MainShell> {
         ),
         child: NavigationBar(
           selectedIndex: _index,
-          onDestinationSelected: (i) => setState(() => _index = i),
+          onDestinationSelected: (i) {
+            setState(() => _index = i);
+            taskStore.load();
+          },
           destinations: const [
             NavigationDestination(
                 icon: Icon(Icons.home_outlined), label: 'Home'),

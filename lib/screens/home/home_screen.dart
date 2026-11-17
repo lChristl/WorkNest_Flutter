@@ -42,7 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: SearchField(onChanged: (v) => setState(() => _query = v)),
+                child:
+                    SearchField(onChanged: (v) => setState(() => _query = v)),
               ),
             ],
           ),
@@ -86,7 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             final task = items[i];
                             return Dismissible(
                               key: ValueKey(task.id),
-                              direction: DismissDirection.endToStart,
+                              direction: task.isGroup
+                                  ? DismissDirection.none
+                                  : DismissDirection.endToStart,
                               background: Container(
                                 alignment: Alignment.centerRight,
                                 padding: const EdgeInsets.only(right: 16),
