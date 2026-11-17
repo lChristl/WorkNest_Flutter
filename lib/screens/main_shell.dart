@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../widgets/worknest_app_bar.dart';
 import 'calendar/calendar_screen.dart';
+import 'groups/groups_screen.dart';
 import 'home/home_screen.dart';
 import 'profile/profile_screen.dart';
 
-/// Holds the header + bottom navigation (Home / Calendar / Profile).
+/// Holds the header + bottom navigation (Home / Calendar / Groups / Profile).
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -26,6 +27,7 @@ class _MainShellState extends State<MainShell> {
         children: const [
           HomeScreen(),
           CalendarScreen(),
+          GroupsScreen(),
           ProfileScreen(),
         ],
       ),
@@ -48,9 +50,12 @@ class _MainShellState extends State<MainShell> {
           selectedIndex: _index,
           onDestinationSelected: (i) => setState(() => _index = i),
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
+            NavigationDestination(
+                icon: Icon(Icons.home_outlined), label: 'Home'),
             NavigationDestination(
                 icon: Icon(Icons.calendar_month_outlined), label: 'Calendar'),
+            NavigationDestination(
+                icon: Icon(Icons.groups_outlined), label: 'Groups'),
             NavigationDestination(
                 icon: Icon(Icons.person_outline), label: 'Profile'),
           ],

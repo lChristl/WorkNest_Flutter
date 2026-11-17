@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../services/supabase_client.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/pill_button.dart';
@@ -17,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _username = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
+  bool _loading = false;
 
   @override
   void dispose() {
@@ -26,12 +29,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _create() {
-    // TODO: Add real registration
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainShell()),
-      (route) => false,
-    );
+  void _showMessage(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  Future<void> _create() async {
+    final username = _username.text.trim();
+    final email = _email.text.trim();
+    final password = _password.text;
+
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+      _showMessage('Please fill in all fields');
+      return;
+    }
+    if (password.length < 6) {
+      _showMessage('Password must be at least 6 characters');
+      return;
+    }
+
+    setState(() => _loading = true);
+    try {
+      await supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: {'username': username},
+      );
+
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainShell()),
+        (route) => false,
+      );
+    } on AuthException catch (e) {
+      _showMessage(e.message);
+    } catch (e) {
+      debugPrint('SIGN UP ERROR: $e');
+      _showMessage('Error: $e');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -76,7 +112,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            AppTextField(controller: _username, hint: 'Username'),
+                            AppTextField(
+                                controller: _username, hint: 'Username'),
                             const SizedBox(height: 12),
                             AppTextField(
                               controller: _email,
@@ -90,7 +127,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               obscure: true,
                             ),
                             const SizedBox(height: 20),
-                            PillButton(label: 'Create', onPressed: _create),
+                            PillButton(
+                              label: _loading ? 'Creating...' : 'Create',
+                              onPressed: _loading ? () {} : _create,
+                            ),
                           ],
                         ),
                       ),
