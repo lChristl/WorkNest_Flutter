@@ -8,13 +8,19 @@ import 'group_summary_tab.dart';
 import 'group_tasks_tab.dart';
 
 class GroupDetailScreen extends StatelessWidget {
-  final Group group;
-  const GroupDetailScreen({super.key, required this.group});
+    final Group group;
+  final int initialTab;
+  const GroupDetailScreen({
+    super.key,
+    required this.group,
+    this.initialTab = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+        return DefaultTabController(
       length: 3,
+      initialIndex: initialTab,
       child: Scaffold(
         appBar: workNestAppBar(),
         body: Padding(

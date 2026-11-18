@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../services/task_store.dart';
 
 import '../../models/group.dart';
 import '../../models/group_member.dart';
@@ -114,6 +115,7 @@ class _GroupTasksTabState extends State<GroupTasksTab> {
       await groupTaskService.submitTask(t.id, note);
       _showMessage('Task submitted for review');
       await _load();
+      taskStore.load();
     } on PostgrestException catch (e) {
       _showMessage(e.message);
     } catch (e) {
@@ -135,6 +137,7 @@ class _GroupTasksTabState extends State<GroupTasksTab> {
       );
       _showMessage(result.approve ? 'Task approved' : 'Task rejected');
       await _load();
+      taskStore.load();
     } on PostgrestException catch (e) {
       _showMessage(e.message);
     } catch (e) {

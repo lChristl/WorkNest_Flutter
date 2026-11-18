@@ -55,19 +55,25 @@ class _SubmitDialogState extends State<_SubmitDialog> {
       backgroundColor: AppColors.card,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: const Text('Submit task'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.task.name,
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _note,
-            maxLines: 3,
-            decoration: _decoration('Note about what you did (optional)'),
-          ),
-        ],
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.task.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _note,
+              minLines: 3,
+              maxLines: 3,
+              decoration: _decoration('Note about what you did (optional)'),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -138,7 +144,8 @@ class _ReviewDialogState extends State<_ReviewDialog> {
       setState(() => _error = 'Percentage must be a number from 0 to 100');
       return;
     }
-    Navigator.of(context).pop(ReviewResult(approve, percent, _note.text.trim()));
+    Navigator.of(context)
+        .pop(ReviewResult(approve, percent, _note.text.trim()));
   }
 
   @override
@@ -148,42 +155,60 @@ class _ReviewDialogState extends State<_ReviewDialog> {
       backgroundColor: AppColors.card,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       title: const Text('Review task'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(t.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text('Submitted by ${widget.assigneeName}',
-                style: const TextStyle(fontSize: 12)),
-            if ((t.submissionNote ?? '').isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text('Their note: ${t.submissionNote}',
-                  style: const TextStyle(fontSize: 13)),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                t.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Submitted by ${widget.assigneeName}',
+                style: const TextStyle(fontSize: 12),
+              ),
+              if ((t.submissionNote ?? '').isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Their note: ${t.submissionNote}',
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ],
+              const SizedBox(height: 14),
+              const Text(
+                'Contribution percentage (0-100):',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              TextField(
+                controller: _percent,
+                keyboardType: TextInputType.number,
+                decoration: _decoration('e.g. 25'),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Feedback (optional):',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              TextField(
+                controller: _note,
+                minLines: 2,
+                maxLines: 2,
+                decoration: _decoration('Write feedback for the member'),
+              ),
+              if (_error != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _error!,
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
+              ],
             ],
-            const SizedBox(height: 14),
-            const Text('Contribution percentage (0-100):',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            TextField(
-              controller: _percent,
-              keyboardType: TextInputType.number,
-              decoration: _decoration('e.g. 25'),
-            ),
-            const SizedBox(height: 12),
-            const Text('Feedback (optional):',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            TextField(
-              controller: _note,
-              maxLines: 2,
-              decoration: _decoration('Write feedback for the member'),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 8),
-              Text(_error!, style: const TextStyle(color: Colors.redAccent)),
-            ],
-          ],
+          ),
         ),
       ),
       actionsAlignment: MainAxisAlignment.spaceBetween,
@@ -207,7 +232,8 @@ class _ReviewDialogState extends State<_ReviewDialog> {
                 foregroundColor: AppColors.text,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
               onPressed: () => _decide(true),
               child: const Text('Approve'),

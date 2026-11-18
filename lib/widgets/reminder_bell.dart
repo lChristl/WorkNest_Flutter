@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../screens/reminders/reminders_screen.dart';
-import '../services/reminder_service.dart';
 import '../services/task_store.dart';
 import '../theme/app_colors.dart';
 
@@ -13,7 +12,7 @@ class ReminderBell extends StatelessWidget {
     return ListenableBuilder(
       listenable: taskStore,
       builder: (context, _) {
-        final count = computeReminders(taskStore.tasks).count;
+        final count = taskStore.reminders.count;
         return IconButton(
           tooltip: 'Reminders',
           onPressed: () => Navigator.of(context).push(

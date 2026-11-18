@@ -32,7 +32,7 @@ class _MainShellState extends State<MainShell> {
     await taskStore.load();
     if (!mounted) return;
 
-    final count = computeReminders(taskStore.tasks).count;
+    final count = taskStore.reminders.count;
     if (count == 0) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
